@@ -1,0 +1,115 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Tue Mar 31 15:38:37 2020
+;; Desktop file format version 208
+;; Emacs version 26.3
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (24195 43597 738883 548000) (desktop . "208") "nanhung@ThinkPad-X200" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font-backend xft x) (font . "-pyrs-Roboto Mono-normal-normal-normal-*-13-*-*-*-*-0-iso10646-1") (font-parameter . "Roboto Mono 10") (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (horizontal-scroll-bars) (foreground-color . "#eeeeec") (background-color . "#2e3436") (mouse-color . "OrangeRed") (border-color . "gold") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (no-special-glyphs) (scroll-bar-foreground . "dark turquoise") (scroll-bar-background . "gray20") (menu-bar-lines . 1) (tool-bar-lines . 0) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 0) (alpha) (no-focus-on-map) (no-accept-focus) (fullscreen . fullboth) (visibility . t) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "#fce94f") (sticky) (environment) (fullscreen-restore) (frameset--id . "68F5-2EAF-9ADF-FCC3") (frameset--mini t . t) (modeline . t) (unsplittable) (icon-name) (display . ":0") (explicit-name) (height . 45) (width . 156) (left . 0) (top . 0)) ((min-height . 4) (min-width . 20) (min-height-ignore . 2) (min-width-ignore . 17) (min-height-safe . 1) (min-width-safe . 4) (min-pixel-height . 68) (min-pixel-width . 160) (min-pixel-height-ignore . 34) (min-pixel-width-ignore . 136) (min-pixel-height-safe . 17) (min-pixel-width-safe . 32)) hc (pixel-width . 1280) (pixel-height . 753) (total-width . 160) (total-height . 44) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 640) (pixel-height . 753) (total-width . 80) (total-height . 44) (normal-height . 1.0) (normal-width . 0.5) (buffer "bupro.Rproj" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins 2) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 1) (start . 1))) (leaf (last . t) (pixel-width . 640) (pixel-height . 753) (total-width . 80) (total-height . 44) (normal-height . 1.0) (normal-width . 0.5) (buffer "manuscript.rmd" (selected) (hscroll . 0) (fringes 8 8 nil) (margins 3) (scroll-bars nil 2 t nil 0 t) (vscroll . 0) (dedicated) (point . 36214) (start . 34919)))))])
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("risk" "unl" "x" "s" "salar" "Cer" "Fred" "Frede" "Fred" "Fre" "Fred" "F" "Frederic"))
+(setq regexp-search-ring nil)
+(setq register-alist '((48 . "(use-package polymode\n    :mode\n    ((\"\\\\.Rmd\" . poly-markdown+r-mode))\n    :init\n    (autoload 'r-mode \"ess-site.el\" \"Major mode for editing R source.\" t)\n    :defer t\n    )\n")))
+(setq file-name-history '("~/mixtoxS/" "~/mixtoxS/manuscript.rmd" "~/mixtoxS/test.rmd" "~/mixtoxS/test.Rmd" "~/mixtoxS/" "~/pksensi/README.md" "~/.emacs" ".emacs" "~/bupro" "~/bupro/" "~/bupro/RScript/bupro2.R" "~/bupro" "/home/nanhung/bupro" "~/bupro/" "~/bupro" "~/bupro/" "~/bupro" "" "~/bupro" "/home/nanhung/bupro" "~/bupro/RScript/bupro3.R" "~/bupro" "~/pksensi" "~/pksensi/" "~/bupro" "~/bupro/" "~/bupro" "~/letteR/Interview/*shell*" "~/BodyImage/*Backtrace*" "~/BodyImage/readme.org" "~/BodyImage/" "~/bupro" "~/bupro/RScript/" "~/bupro" "~/mixtoxS/" "~/bupro" "~/bupro/RScript/bupro3.R" "~/bupro" "~/.emacs.d/"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 208
+  "/home/nanhung/bupro/bupro.Rproj"
+  "bupro.Rproj"
+  'fundamental-mode
+  '(linum-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-display-time 24195 43564 957235 215000) (buffer-file-coding-system . undecided-unix))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  "/home/nanhung/mixtoxS/manuscript.rmd"
+  "manuscript.rmd"
+  'markdown-mode
+  '(eldoc-mode linum-mode poly-markdown+r-mode)
+  36214
+  '(841 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-display-time 24195 43564 869369 115000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode) (truncate-lines))
+  '((mark-ring (791 822 791 828 834 828 652 680 680 841))))
+
+(desktop-create-buffer 208
+  "/home/nanhung/.emacs"
+  ".emacs"
+  'emacs-lisp-mode
+  '(eldoc-mode auto-complete-mode linum-mode)
+  2613
+  '(2547 nil)
+  nil
+  nil
+  '((buffer-display-time 24195 43427 202966 656000) (buffer-file-coding-system . utf-8-unix))
+  '((mark-ring (167 167 2547 167 2547 167 167 167 167 168 168 168 168 640 2547 2547))))
+
+(desktop-create-buffer 208
+  nil
+  "RScript"
+  'dired-mode
+  '(linum-mode)
+  185
+  '(nil nil)
+  t
+  '("/home/nanhung/bupro/RScript/")
+  '((buffer-display-time 24195 42841 619090 377000))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  "/home/nanhung/pksensi/README.md"
+  "README.md"
+  'markdown-mode
+  '(eldoc-mode linum-mode ess-r-package-mode poly-markdown-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-display-time 24195 42381 721113 334000) (buffer-file-coding-system . utf-8-unix))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  nil
+  "nanhung"
+  'dired-mode
+  '(linum-mode)
+  1054
+  '(1054 nil)
+  t
+  '("/home/nanhung/")
+  '((buffer-display-time 24195 40290 268412 20000))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  nil
+  "mixtoxS"
+  'dired-mode
+  '(linum-mode)
+  583
+  '(nil nil)
+  t
+  '("/home/nanhung/mixtoxS/")
+  '((buffer-display-time 24195 40157 392811 137000))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  nil
+  "bupro"
+  'dired-mode
+  '(linum-mode)
+  182
+  '(nil nil)
+  t
+  '("/home/nanhung/bupro/")
+  '((buffer-display-time 24195 43564 839220 652000))
+  '((mark-ring nil)))
+

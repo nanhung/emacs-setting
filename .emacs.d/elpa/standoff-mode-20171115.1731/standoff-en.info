@@ -1,0 +1,1568 @@
+This is standoff-en.info, produced by makeinfo version 6.5 from
+standoff-en.texi.
+
+Copyright © 2015 Christian Lück
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled “GNU Free Documentation License.”
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* Stand-Off Mode: (standoff-en).Creating stand-off markup. English manual.
+END-INFO-DIR-ENTRY
+
+
+File: standoff-en.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (dir)
+
+Stand-Off Mode
+**************
+
+User Manual for Stand-Off Mode, version 0.4.2.
+
+   Copyright © 2015 Christian Lück
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled “GNU Free Documentation License.”
+
+* Menu:
+
+* Introduction::
+* Starting and quitting stand-off mode::
+* Markup elements::
+* Relations::
+* Attributes::
+* Comments::
+* Configuration::
+* GNU Free Documentation License::
+
+ — The Detailed Node Listing —
+
+Introduction
+
+* Summary::
+* Installation::
+* Common terms::
+* Character offsets::
+* Conventions::
+
+Starting and quitting stand-off mode
+
+* Activating stand-off mode::
+* Readability of XML source documents::
+* Performance::
+* Saving annotations::
+* Loading annotations::
+
+Configuration
+
+* Stand-Off mode for files of a specific type::
+* Back-Ends::
+* Annotation schema::
+
+Back-Ends
+
+* JSON file back-end::
+* JSON object keys::
+* Dummy back-end::
+
+JSON object keys
+
+* JSON keys for markup ranges::
+* JSON keys for relations::
+* JSON keys for attributes::
+* JSON keys for meta data::
+
+Defining an annotation schema
+
+* Strict or loose handling of an annotation schema::
+* Defining a schema using Emacs lisp::
+* Generating an annotation schema from OWL::
+
+
+
+File: standoff-en.info,  Node: Introduction,  Next: Starting and quitting stand-off mode,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+* Menu:
+
+* Summary::
+* Installation::
+* Common terms::
+* Character offsets::
+* Conventions::
+
+
+File: standoff-en.info,  Node: Summary,  Next: Installation,  Prev: Introduction,  Up: Introduction
+
+1.1 Summary
+===========
+
+Standoff-mode turns Emacs into a tagger for annotating texts.  In
+contrast to internal markup, when creating stand-off markup, aka
+external markup, no tags are inserted into the document.  But the
+annotations are stored somewhere else and refer the annotated file by
+character offsets.
+
+   Standoff-mode lets you create different types of annotations: a)
+_markup elements_, i.e.  passages or spans of your text, b) _relations_,
+which interrelate two such markup elements in a directed fashion, c)
+_Attributes_ on markup elements, which are key-value pairs, d) free text
+_comments_ on one (or more) markup elements.
+
+
+File: standoff-en.info,  Node: Installation,  Next: Common terms,  Prev: Summary,  Up: Introduction
+
+1.2 Installation
+================
+
+There are two ways to install standoff mode:
+
+   • By using the Emacs package system (recommended).
+
+   • By using standoff mode’s git repository.
+
+Using the Emacs package system
+------------------------------
+
+standoff mode is on the Milkypostman’s Emacs Lisp Package Archive
+(MELPA), what makes it very easy to install.
+
+   If MELPA is not already in your list of package repositories add the
+following line to your init file:
+
+     (add-to-list 'package-archives
+                  '("melpa" . "https://melpa.org/packages/"))
+
+   On windows you may run into problems using the ‘https’ location.  Use
+‘http’ instead.
+
+   Then make the packages from melpa available using
+‘package-refresh-contents’ and call ‘package-install’:
+
+     M-x package-refresh-contents RET
+     M-x package-install RET standoff-mode RET
+
+   Alternatively you can use the menu for installing packages:
+
+     M-x package-list-packages RET
+
+   Then search ‘standoff-mode’, use ‘i’ to mark it for installation and
+‘x’ to install the marked package(s).
+
+Using standoff mode’s git repository
+------------------------------------
+
+You can clone the git repository like this:
+
+     cd ~/src
+     git clone https://github.com/lueck/standoff-mode
+     make package
+
+   This makes a package file ‘standoff-mode-<VERSION>.tar’.  Now,
+install it:
+
+     M-x package-install-file RET ~/src/standoff-mode/standoff-mode-<VERSION>.tar
+
+   You could also add ‘~src/standoff-mode/’ to Emacs’ ‘load-path’.  Then
+it’s not required to use ‘package’ at all.
+
+
+File: standoff-en.info,  Node: Common terms,  Next: Character offsets,  Prev: Installation,  Up: Introduction
+
+1.3 Common terms
+================
+
+External markup
+---------------
+
+This manual makes use of some common terms regarding stand-off markup.
+
+source document
+     That’s the document, the external annotations refer to.  It may be
+     a plain text file, but may also contain markup, e.g.  XML-Tags.
+
+internal markup
+     That’s the markup, which is already contained in the source
+     document, e.g.  the XML-Tags contained there.
+
+stand-off markup / annotations
+     That’s the markup, which exits beside the source document.
+     Stand-Off mode produces this kind of markup.
+
+external document
+     That’s a document, that contains stand-off annotations, which refer
+     an other document.
+
+internalizing
+     That’s a procedure, which adds external annotations into a source
+     document, e.g.  by producing a (new) XML document.  This is not
+     done by standoff-mode, but by an other tool.  See
+     <http://github.com/lueck/standoff-tools>.
+
+externalizing
+     That’s a procedure, which extracts annotations from a document and
+     generates external markup from them.
+
+   See also
+<http://www.tei-c.org/release/doc/tei-p5-doc/de/html/SA.html#SASO> and
+<http://www.openannotation.org/spec/core/>.
+
+Emacs basics
+------------
+
+Please skip this, if you’re familiar with Emacs.
+
+Command
+     Do something but simply inserting characters into a file.  A
+     command is called by typing a key sequence, by calling by it’s name
+     or by selecting it from the menu.
+
+Echo area
+     Messages, e.g.  generated by commands, are displayed in the echo
+     area at the bottom of an Emacs windows.
+
+‘C-g’
+     Hold down ‘<Control>’ and press ‘g’ to quit a partially executed
+     command.  The message “Quit” will show up in the echo area.  This
+     is the most imported key binding in Emacs.
+
+Minibuffer
+     When the minibuffer is in use, it appears in the echo area, with a
+     cursor.  The minibuffer starts with a prompt, usually ending with a
+     colon.  The prompt states what kind of input is expected, and how
+     it will be used.
+
+Buffer
+     The buffer is the basic editing unit.  One buffer corresponds to
+     one piece of text being edited.  You can have several buffers open
+     at once, but can edit only one at a time.  Exercise: Find out how
+     to change buffers.
+
+read-only buffer
+     standoff mode make the buffer of the source document read only.
+     Other special buffers, e.g.  for displaying relations, are read
+     only, too.
+
+Window
+     Several buffers can be visible at the same time when you’re
+     splitting your window.  Exercise: Find out how to split and unsplit
+     a window.
+
+Frame
+     In Emacs, frames are what window managers call windows.  Exercise:
+     Find out how to display a new frame.
+
+Point
+     Point is the position of the curser.
+
+Mark
+     In a buffer, you can set marks, which you can return to by simple
+     key combinations.
+
+Region
+     In Emacs, region is the name of the selection area of a buffer.  It
+     is the text spanning between the last set mark and the point.  It
+     can be selected with the keyboard and with the mouse.
+
+Modeline
+     Each Emacs window (aside from minibuffer windows) typically has a
+     mode line at the bottom, which displays status information about
+     the buffer displayed in the window.  The mode line contains
+     information about the buffer, such as its name, associated file and
+     major and minor modes.  Some programs call this the status bar.
+
+Mode
+     Emacs contains many editing modes that alter its basic behavior in
+     useful ways by provinding commands.  standoff mode is a mode and
+     the behaviour it defines is described in this manual.
+
+Menu
+     Each frame has a menu bar.  You can select many, but not all
+     commands from it.  Standoff mode adds the Stand-Off menu.  It is
+     gone, if the minibuffer is active.
+
+Key sequence
+     Some Emacs commands are invoked by just one input event; for
+     example, ‘C-f’ moves forward one character in the buffer.  Other
+     commands take two or more input events to invoke, such as ‘C-x C-f’
+     and ‘C-x 4 C-f’.  A key sequence, or key for short, is a sequence
+     of one or more input events that is meaningful as a unit.
+
+Modifier keys ‘<C->’, ‘<M->’
+     To input the key sequence ‘<C->f’, hold down ‘<Control>’ and then
+     press ‘f’.  ‘<Control>’ is the first modifier key in Emacs.  The
+     second modifier key is ‘<M->’, which stands for ‘<Meta>’.  To input
+     ‘<M->x’, either hold down ‘<Alt>’ or–if you’re on a keyboard
+     without ‘<Alt>’–press ‘<ESC>’, then press ‘x’.
+
+‘<M->x command-name RET’
+     You can call a command by it’s name instead of typing a key
+     sequence or selecting it from the menu.  Type in the ‘<M->x’ key
+     sequence first, then call the command name and then press
+     ‘<Return>’.  In short: ‘<M->x command-name RET’.
+
+     In standoff-mode, there are only a few commands, that have to be
+     called by name.  These are commands that could mess up your
+     annotation data, so you better know what you are doing.  Most other
+     commands can either be called by key combinations or from the
+     menus.
+
+   *Note (Emacs)Top::.
+
+
+File: standoff-en.info,  Node: Character offsets,  Next: Conventions,  Prev: Common terms,  Up: Introduction
+
+1.4 Character offsets
+=====================
+
+An _external document_ produced by stand-off mode looks like this:
+
+     (setq standoff-markup-read-function-dumped
+      (quote
+       (("ac06be81-d86e-4fe5-b84e-4952b1e571c9"
+         "http://beispiel.fernuni-hagen.de/ontologies/beispiel#beispiel"
+         28095
+         28100
+         "Dante")
+        ("a29ca667-0f99-4933-b0aa-8a7b1c1929e9"
+         "http://beispiel.fernuni-hagen.de/ontologies/beispiel#konzept"
+         28057
+         28070
+         "Große Dichter")
+        ...)))
+
+     (setq standoff-source-md5-dumped "a2997fcd8c318048abf34889212c1982")
+
+   That’s a representation of the external markup in so called
+s-expressions, which is used by the dummy back-end which simply dumps
+emacs lisp data into a file.  There is also a JSON back-end.  See for
+more info about representation formats and back-ends.
+
+   All text spans from the source document, that where annotated, make
+up a list of markup elements, stored in the variable
+‘standoff-markup-read-function-dumped’.  Each markup element is
+delimited by paratheses and has positional arguments.
+
+   The first positional arguments is made from 32 letters and digits,
+separted by ’-’ into 5 blocks, and is a universally unique identifier
+(UUID) of the markup element.
+
+   The second positional argument, which has the form of a URI, gives
+the type or class of the markup element.  In the first case, it’s a
+“beispiel” (german for “example”) from the namespace
+‘http://beispiel.fernuni-hagen.de/ontologies/beispiel’, in the second
+case it is “konzept” (german for “term”) from the same namespace.
+
+   The next two positional arguments give the _charater offsets_ of the
+start and end of the text span in the source document.  Here, the
+annotated passage spans from character 28095 to 28100.
+
+   The fifth positional entry is the string from the source document,
+that spans from the start to the end character offset.  The latin
+capital letter ‘D’ in ‘Dante’ has position 28095, the ‘e’ in the end of
+the name has position 28099.
+
+   Further down there is the checksum for the source document.  The
+checksum is calculated, when the document is opened.  As soon as the
+source document is changed, the checksum changes and stand-off mode
+alarms you with an error, because the _character offsets_ are likely to
+be incorrect now.
+
+
+File: standoff-en.info,  Node: Conventions,  Prev: Character offsets,  Up: Introduction
+
+1.5 Conventions
+===============
+
+This manual is available in three formats: PDF, HTML, and info files,
+which can be read using Emacs’ info browser.
+
+   Throughout this manual, commands offered by stand-off mode are
+represented following the conventions:
+
+ -- Command: standoff-some-command-name ARG1 ARG2
+     (‘x’) (‘Stand-Off->Some command’) Explanation what this command
+     does.  Explanation of the Arguments ARG1 and ARG2.
+
+   Here is an example:
+
+ -- Command: standoff-display-manual
+     (‘?’) (‘Stand-Off->Manual’) Open the manual for standoff mode.
+     There are manuals in two languages: english and german.  The
+     customization option ‘standoff-info-language’ is used, to select a
+     language.  If is set to “de”, the german manual is opened.  If it
+     is nil, then the ‘LANG’ environment variable is evaluated.  When
+     the result of the evaluation is not “de”, the english manual is
+     opened.
+
+   The command ‘standoff-display-manual’ takes no arguments an is bound
+to the key ‘?’ and the menu entry ‘Manual’ in the ‘Stand-Off’ menu.
+
+   You can call such a command in three ways.  (1) Call it by name, (2)
+by key code, (3) select it from the menu.  The name is given in the
+first line right after the keyword Command.  Here, the command’s name is
+‘standoff-display-manual’.  The key code is given in the first
+parentheses, here it is ‘?’.  So you can call the manual by simply
+pressing the ‘?’ on your keyboard, provided that the current buffer is
+in standoff mode.  The menu entry is given in the second parenthesis,
+here it is the menu entry “Manual” in the menu “Stand-Off”.
+
+
+File: standoff-en.info,  Node: Starting and quitting stand-off mode,  Next: Markup elements,  Prev: Introduction,  Up: Top
+
+2 Starting and quitting stand-off mode
+**************************************
+
+* Menu:
+
+* Activating stand-off mode::
+* Readability of XML source documents::
+* Performance::
+* Saving annotations::
+* Loading annotations::
+
+
+File: standoff-en.info,  Node: Activating stand-off mode,  Next: Readability of XML source documents,  Prev: Starting and quitting stand-off mode,  Up: Starting and quitting stand-off mode
+
+2.1 Activating stand-off mode
+=============================
+
+ -- Command: standoff-mode
+     Activate standoff mode for the file displayed in the current
+     buffer.
+
+   After opening a file, standoff mode can be activated by ‘M-x
+standoff-mode RET’.  *Note Stand-Off mode for files of a specific
+type::, to configure Emacs to always open files with a specific suffix
+in standoff mode.
+
+   In standoff mode, the buffer is read-only.  This absolutely makes
+sense, because the external markup references spans of the source
+document by character offsets.  Modifying the source document would
+break these character offsets.
+
+   If standoff mode is active, “Stand-Off” shows up in the modeline and
+the menu ‘Stand-Off’ is present (not present if minibuffer is active).
+
+   Right after activating, standoff mode tries to load existing
+annotations.  Depending on the back-end, standoff mode loads the
+annotations of a file in the same directory and with the same file name
+as the source document, but with the additional suffix ‘.json’ (JSON
+file back-end), or ‘.dump.el’ (dummy back-end).  *Note Back-Ends::.
+
+   Be aware, that a back-end has to be configured, before standoff mode
+is ready to be used.
+
+
+File: standoff-en.info,  Node: Readability of XML source documents,  Next: Performance,  Prev: Activating stand-off mode,  Up: Starting and quitting stand-off mode
+
+2.2 Readability of XML source documents
+=======================================
+
+XML-Files often aren’t friendly to the user’s eye.  Readability can be
+improved by hiding XML tags like ‘<p>’.  Also character references of
+the form ‘&#xNNNN;’ can be substituted with the corresponding glyphs.
+
+ -- Command: standoff-xml-tags-invisible
+     (‘Stand-Off->Hide/Show XML-tags’) Hide XML tags when they are
+     visible, show them, when they are invisible.
+
+ -- Command: standoff-xml-toggle-char-ref-glyph-substitute
+     (‘Stand-Off->Substitute character references with glyphs’) Replace
+     XML character references with the corresponding glyph.
+
+   When executing, these commands take some time.  On larger files (some
+MBs), you might have to wait a minute.
+
+   Hiding these XML internals makes sense not only regarding human
+readability.  It also helps making the annotations syntactically
+correct.  Starting or ending a markup range inside an XML tag or
+character reference would result in an error or in invalid XML, when
+internalized.  By hiding these internals, a markup range can never start
+or end inside.
+
+   But hiding can result in bad performance of the editor.  For solving
+this, *note Performance::.
+
+
+File: standoff-en.info,  Node: Performance,  Next: Saving annotations,  Prev: Readability of XML source documents,  Up: Starting and quitting stand-off mode
+
+2.3 Performance
+===============
+
+Standoff mode generates tons of overlays.  Overlays are an Emacs
+technique to alter the visual appearance of a buffer’s text on the
+screen, for the sake of presentation features.  Replacing XML character
+references with the corresponding glyphs is done by overlays.  Showing
+markup ranges in the source document is also done by overlays, since
+they allow adding visual features and even characters while not changing
+the underlying text.  (That’s why the point can’t be positioned over a
+markup ranges’ bounding bracket and number.  They are not really in the
+buffers text, but only seem to be there.)
+
+   When working with larger XML files, the tons of overlays may slow
+down Emacs significantly, even render it unusable.  But there is another
+Emacs feature, to work around this: Narrowing the buffer down to a
+portion of the file.  When you run into performance problems with
+standoff mode, please try narrowing.
+
+ -- Command: narrow-to-region REGION
+     (‘C-x n n’) Narrow the buffer to the region.  The REGION must be
+     active when calling this command.  Calling it the first time, you
+     will be asked if you really want to activate the narrowing feature.
+
+ -- Command: widen
+     (‘C-x n w’) Widen narrowed buffer to see the full file again.
+
+   *Note (Emacs)Narrowing::.
+
+
+File: standoff-en.info,  Node: Saving annotations,  Next: Loading annotations,  Prev: Performance,  Up: Starting and quitting stand-off mode
+
+2.4 Saving annotations
+======================
+
+Saving the external markup depends on the back-end, that is used in
+standoff mode.
+
+   If the JSON file back-end is configured, the annotations are stored
+in a separate buffer which references a file.  The default file name is
+the file name of the source document plus the suffix ‘.json’.  Saving is
+done by switching to this buffer and saving the json-file.  Before
+quitting Emacs, the editor asks if modified buffers should be saved to
+disk.
+
+   If the dummy back-end is configured, the annotations are kept in
+memory only, while annotating the source document.  If Emacs quits, the
+annotations are lost.  But they can be dumped to disk by calling a dump
+command and they can be loaded from the dump file in the next session.
+
+ -- Command: standoff-dump-elisp FILENAME
+     (‘u’) (‘Stand-Off->Dump to file (SAVE)’) Save the annotations as
+     s-expressions in a Emacs lisp file.  You will be prompted for a
+     FILENAME. It defaults to the file name of the source document, plus
+     the suffix ‘.dump.el’, since that’s the name of the file that is
+     automatically loaded on activation.
+
+   Note, that this command is always present.  So, whatever back-end is
+used, you’re able to dump the annotations to local disk.  Use
+_standoff-tools_ to generate various other formats from it:
+<http://github.com/lueck/standoff-tools>.
+
+   *Be aware to always dump your annotations, if the dummy back-end is
+configured.  They can’t be recovered otherwise.*
+
+   When working with a back-end, that stores the annotations on local
+disk, it is recommended to use the JSON file back-end.  Reason: It
+always asks you if you want to save your the json file before quitting
+Emacs.
+
+
+File: standoff-en.info,  Node: Loading annotations,  Prev: Saving annotations,  Up: Starting and quitting stand-off mode
+
+2.5 Loading annotations
+=======================
+
+One of the following load commands is called automatically after
+standoff mode is activated.  Which one, depends on the back-end used.
+Automatic loading on activation succeeds, if a file matching the default
+file name of the command (see below) is present.
+
+   The loading commands can even be called interactively by the user.
+They are neither bound to the menu nor to a key code, since calling them
+unwittingly might damage your annotation data.  (Using the JSON backend,
+there is only a minor risk.)
+
+ -- Command: standoff-json-file/load-file FILENAME
+     Load annotations from a JSON file.  You will be prompted for the
+     FILENAME. It defaults to the file name of the source document, plus
+     the suffix ‘.json’.
+
+ -- Command: standoff-dummy-load-dumped FILENAME
+     Load annotations from a Emacs lisp file with dumped annotations.
+     You will be prompted for a FILENAME. It defaults to the file name
+     of the source document, plus the suffix ‘.dump.el’.
+
+   For more information on back-ends and configuration, *note
+Back-Ends::.
+
+
+File: standoff-en.info,  Node: Markup elements,  Next: Relations,  Prev: Starting and quitting stand-off mode,  Up: Top
+
+3 Markup elements
+*****************
+
+
+File: standoff-en.info,  Node: Relations,  Next: Attributes,  Prev: Markup elements,  Up: Top
+
+4 Relations
+***********
+
+
+File: standoff-en.info,  Node: Attributes,  Next: Comments,  Prev: Relations,  Up: Top
+
+5 Attributes
+************
+
+
+File: standoff-en.info,  Node: Comments,  Next: Configuration,  Prev: Attributes,  Up: Top
+
+6 Comments
+**********
+
+
+File: standoff-en.info,  Node: Configuration,  Next: GNU Free Documentation License,  Prev: Comments,  Up: Top
+
+7 Configuration
+***************
+
+* Menu:
+
+* Stand-Off mode for files of a specific type::
+* Back-Ends::
+* Annotation schema::
+
+
+File: standoff-en.info,  Node: Stand-Off mode for files of a specific type,  Next: Back-Ends,  Prev: Configuration,  Up: Configuration
+
+7.1 Stand-Off mode for files of a specific type
+===============================================
+
+You can configure Emacs to always activate standoff mode on certain file
+types.  In order to activate standoff mode for all files ending with
+‘.TEI-P5.xml’, put the following line into the init file.
+
+     (add-to-list 'auto-mode-alist '("\\.TEI-P5\\.xml$" . standoff-mode))
+
+
+File: standoff-en.info,  Node: Back-Ends,  Next: Annotation schema,  Prev: Stand-Off mode for files of a specific type,  Up: Configuration
+
+7.2 Back-Ends
+=============
+
+With standoff mode you have some options where to store you annotations
+and in which format.  Storing annotations is done by a “back-end”.
+Before working with standoff mode, it is required to choose a back-end.
+
+   The annotations can be stored in a file on the local disk or in a
+central database.  The “JSON file back-end” and the dummy back-end store
+them locally on disk.  The “JSON rest back-end” (under development)
+stores them in a database communicating via a restful web-service.
+
+   The JSON file back-end stores the annotations in JSON format, and the
+names of keys of the JSON objects are configurable.  The dummy back-end
+stores the annotations as s-expressions known from programming languages
+like LISP, in fact they are dumped Emacs-lisp expressions.  The JSON
+rest back-end uses JSON to communicate with the database.
+
+ -- User Option: standoff-backend
+     Configuring, which back-end to use, is simple.  There are two ways:
+     (1) Customize the user option ‘standoff-backend’.  You are
+     automatically directed to the customization dialog if you try
+     working with stand-off mode without a back-end.  (2) Edit your
+     Emacs startup file by adding:
+
+          (setq standoff-backend 'standoff-json-file)
+
+     for using the JSON file back-end, or
+
+          (setq standoff-backend 'standoff-dummy)
+
+     for using the dummy back-end.
+
+     Note, that the type of ‘standoff-backend’ must be a feature, and
+     thus must be quoted like a symbol.
+
+* Menu:
+
+* JSON file back-end::
+* JSON object keys::
+* Dummy back-end::
+
+
+File: standoff-en.info,  Node: JSON file back-end,  Next: JSON object keys,  Prev: Back-Ends,  Up: Back-Ends
+
+7.2.1 JSON file back-end
+------------------------
+
+In order to configure Emacs to use the JSON file back-end, customize the
+‘standoff-backend’ user option or put the following line in your init
+fill:
+
+     (setq standoff-backend 'standoff-json-file)
+
+   We recommend using this back-end, because you’re always asked if you
+want to save your annotations before quitting Emacs (while the dummy
+back-end does not).  As the annotations are stored in JSON format, they
+can be processed by most programming languages.  Moreover, there is no
+further setup needed.  But if you want (or need), you can configure the
+names of the keys of a JSON object.  *Note JSON object keys::.
+
+   The backend provides the following interactive command:
+
+ -- Command: standoff-dummy-load-dumped FILENAME
+     Load annotations from a Emacs lisp file with dumped annotations.
+     You will be prompted for a FILENAME. It defaults to the file name
+     of the source document, plus the suffix ‘.dump.el’.
+
+
+File: standoff-en.info,  Node: JSON object keys,  Next: Dummy back-end,  Prev: JSON file back-end,  Up: Back-Ends
+
+7.2.2 JSON object keys
+----------------------
+
+You can customize the keys of JSON objects to your needs.  We recommend
+setting them in the init file.  Example:
+
+     (setq standoff-json/markup-type-key "qualifiedName"
+           standoff-json/relation-predicate-key "qualifiedName"
+           standoff-json/attribute-name-key "qualifiedName")
+
+   Note that there standoff mode produces meta data on each object.  The
+keys for these meta data can be customized, too.
+
+   (TODO: implement all of the following!)
+
+* Menu:
+
+* JSON keys for markup ranges::
+* JSON keys for relations::
+* JSON keys for attributes::
+* JSON keys for meta data::
+
+
+File: standoff-en.info,  Node: JSON keys for markup ranges,  Next: JSON keys for relations,  Prev: JSON object keys,  Up: JSON object keys
+
+7.2.2.1 JSON keys for markup ranges
+...................................
+
+ -- User Option: standoff-json/markup-array-key
+     The JSON key of array of markup ranges/elements.  Defaults to
+     ‘MarkupRanges’.
+
+ -- User Option: standoff-json/markup-tag-key
+     The JSON key for the tag of a markup range/element.  Defaults to
+     ‘tag’.
+
+ -- User Option: standoff-json/markup-tag-value
+     The JSON value of the tag of a markup range/element.  Defaults to
+     ‘MarkupRange’.  The tag’s value is used to identify, which type of
+     object this is.
+
+ -- User Option: standoff-json/markup-element-id-key
+     The JSON key of the Id of a markup element.  Defaults to
+     ‘elementId’.
+
+ -- User Option: standoff-json/markup-range-id-key
+     The JSON key of the Id of a markup range.  Defaults to ‘rangeId’.
+
+ -- User Option: standoff-json/markup-type-key
+     The JSON key for the markup type.  Defaults to ‘type’.
+
+ -- User Option: standoff-json/markup-start-key
+     The JSON key of the Id of the start character offset.  Defaults to
+     ‘sourceStart’.
+
+ -- User Option: standoff-json/markup-end-key
+     The JSON key of the Id of the end character offset.  Defaults to
+     ‘sourceEnd’.
+
+
+File: standoff-en.info,  Node: JSON keys for relations,  Next: JSON keys for attributes,  Prev: JSON keys for markup ranges,  Up: JSON object keys
+
+7.2.2.2 JSON keys for relations
+...............................
+
+ -- User Option: standoff-json/relation-id-key
+     The JSON key for the id of a relation.  Defaults to ‘relationId’.
+
+ -- User Option: standoff-json/relation-subject-key
+     The JSON key for the Id of a relation’s subject.  Defaults to
+     ‘subjectId’.
+
+ -- User Option: standoff-json/relation-predicate-key
+     The JSON key for the predicate of a relation.  Defaults to
+     ‘predicate’.
+
+ -- User Option: standoff-json/relation-object-key
+     The JSON key for the Id of a relation’s object.  Defaults to
+     ‘objectId’.
+
+
+File: standoff-en.info,  Node: JSON keys for attributes,  Next: JSON keys for meta data,  Prev: JSON keys for relations,  Up: JSON object keys
+
+7.2.2.3 JSON keys for attributes
+................................
+
+ -- User Option: standoff-json/attribute-element-key
+     The JSON key for the Id of the markup element the attribute refers
+     to.  Defaults to ‘elementId’.
+
+ -- User Option: standoff-json/attribute-name-key
+     The JSON key for the name of an attribute.  Defaults to ‘name’.
+
+ -- User Option: standoff-json/attribute-value-key
+     The JSON key for the value of an attribute.  Defaults to ‘value’.
+
+
+File: standoff-en.info,  Node: JSON keys for meta data,  Prev: JSON keys for attributes,  Up: JSON object keys
+
+7.2.2.4 JSON keys for meta data
+...............................
+
+ -- User Option: standoff-json/created-by-key
+     The JSON key for meta data about the creator.  Defaults to
+     ‘createdBy’.
+
+ -- User Option: standoff-json/created-at-key
+     The JSON key for meta data about the creation time.  Defaults to
+     ‘createdAt’.
+
+
+File: standoff-en.info,  Node: Dummy back-end,  Prev: JSON object keys,  Up: Back-Ends
+
+7.2.3 Dummy back-end
+--------------------
+
+The dummy back-end is a very simple implementation of the API for
+standoff mode back-ends.  We recommend using the JSON file back-end,
+because with the dummy implementation, you can easily loose data.
+Annotations are stored in memory, bot in a buffer visiting a file.  So
+when you quit Emacs, everything is lost, unless you dumped it before
+quitting.  So do not forget the following command:
+
+ -- Command: standoff-dump-elisp FILENAME
+     (‘u’) (‘Stand-Off->Dump to file (SAVE)’) Save the annotations as
+     s-expressions in a Emacs lisp file.  You will be prompted for a
+     FILENAME. It defaults to the file name of the source document, plus
+     the suffix ‘.dump.el’, since that’s the name of the file that is
+     automatically loaded on activation.
+
+ -- Command: standoff-dummy-load-dumped FILENAME
+     Load annotations from a Emacs lisp file with dumped annotations.
+     You will be prompted for a FILENAME. It defaults to the file name
+     of the source document, plus the suffix ‘.dump.el’.
+
+   Configuration options for the dummy backend:
+
+ -- User Option: standoff-dummy-create-id-function
+     Pointer to the function (actually the function symbol) for creating
+     ids used in the dummy backend.  Defaults to ‘
+     'standoff-util/create-uuid’, which creates a universally unique id.
+
+ -- User Option: standoff-dummy-user-logging
+     Whether or not to log time and user meta data when creating markup.
+     You can keep out big brother by setting this to ‘nil’.  Defaults to
+     ‘t’.
+
+
+File: standoff-en.info,  Node: Annotation schema,  Prev: Back-Ends,  Up: Configuration
+
+7.3 Defining an annotation schema
+=================================
+
+An annotation schema defines, which markup types may be used, which
+relation predicates can be used for a certain combination of subject and
+object types, which names attributes of a certain type of markup element
+are allowed.
+
+* Menu:
+
+* Strict or loose handling of an annotation schema::
+* Defining a schema using Emacs lisp::
+* Generating an annotation schema from OWL::
+
+
+File: standoff-en.info,  Node: Strict or loose handling of an annotation schema,  Next: Defining a schema using Emacs lisp,  Prev: Annotation schema,  Up: Annotation schema
+
+7.3.1 Strict or loose handling of an annotation schema
+------------------------------------------------------
+
+You can configure, how strict standoff mode enforces an annotation
+schema.  You can configure, to not restrict markup types, relation
+predicates etc.  at all.  Then, the annotator is free to use what ever
+type or predicate comes to his mind.  But even then, a list of types,
+predicates etc.  he used before is presented to him on the UI; but he
+can ignore it and type in a new type, predicate etc.  Let’s call this
+process of implicitly generating an open annotation schema _a
+posteriori_.
+
+   The other alternative is to restrict the user input regarding markup
+types, relation predicates etc.  to an annotation schema given _a
+priori_.
+
+ -- User Option: standoff-markup-type-require-match
+ -- User Option: standoff-predicate-require-match
+ -- User Option: standoff-literal-key-require-match
+     These user options define how restrictive the markup schema is
+     handled.  If set to ‘t’ then the entered type must be amongst the
+     members of the list of markup types, relation predicates of
+     attribute name defined in the schema or so far used in the source
+     document.  If set to ‘nil’, the user may exit his input with any
+     type.  If set to ‘'confirm’ (quoted symbol), the user may exit with
+     any type, but is asked to confirm his input.  All these user
+     options default to ‘'confirm’.
+
+ -- User Option: standoff-markup-types-allowed
+ -- User Option: standoff-relations-allowed
+ -- User Option: standoff-literal-keys-allowed
+     These user options each take a list of allowed types, predicates of
+     attribute names.  Default is the empty list ‘'()’.
+
+
+File: standoff-en.info,  Node: Defining a schema using Emacs lisp,  Next: Generating an annotation schema from OWL,  Prev: Strict or loose handling of an annotation schema,  Up: Annotation schema
+
+7.3.2 Defining a schema using Emacs lisp
+----------------------------------------
+
+You can use Emacs lisp, a LISP dialect, to define an annotation schema.
+We recommend *note Generating an annotation schema from OWL::, but even
+then, you should have read about definition in lisp, because that is,
+what standoff mode effectively reads.  All of the code below must go
+into your init file (or a file loaded by the init file).
+
+ -- User Option: standoff-markup-types-allowed
+ -- User Option: standoff-relations-allowed
+ -- User Option: standoff-literal-keys-allowed
+     These user options each take a list of allowed types, predicates of
+     attribute names.  Default is the empty list ‘'()’.  Here is an
+     example definition:
+
+     (setq standoff-markup-types-allowed '(
+       "http://arb.fernuni-hagen.de/owl/beispiel#Beispiel"
+       "http://arb.fernuni-hagen.de/owl/beispiel#Marker"
+       "http://xmlns.com/foaf/0.1/Person"
+       ))
+
+     (setq standoff-relations-allowed '(
+       (("http://arb.fernuni-hagen.de/owl/beispiel#Beispiel" "http://arb.fernuni-hagen.de/owl/beispiel#Person" "http://arb.fernuni-hagen.de/owl/beispiel#Werk" ) "http://arb.fernuni-hagen.de/owl/beispiel#hatMarker" ("http://arb.fernuni-hagen.de/owl/beispiel#Marker" ))
+     ))
+
+     (setq standoff-literal-keys-allowed '(
+       (("http://arb.fernuni-hagen.de/owl/beispiel#Beispiel" "http://arb.fernuni-hagen.de/owl/beispiel#Kontext" "http://arb.fernuni-hagen.de/owl/beispiel#Konzept" ) "http://arb.fernuni-hagen.de/owl/beispiel#paraphrase" )
+       ))
+
+   Instead of displaying these long IRIs on the UI, you can define
+labels.
+
+ -- User Option: standoff-markup-types-labels
+ -- User Option: standoff-relations-labels
+ -- User Option: standoff-literal-keys-labels
+     See the example below.
+
+     (setq standoff-markup-labels '(
+       ("http://arb.fernuni-hagen.de/owl/beispiel#Beispiel" . "Beispiel")
+       ("http://xmlns.com/foaf/0.1/Person" . "Person")
+       ))
+
+     (setq standoff-predicate-labels '(
+       ("http://arb.fernuni-hagen.de/owl/beispiel#markiert" . "markiert")
+     )
+
+     (setq standoff-literal-key-labels '(
+       ("http://arb.fernuni-hagen.de/owl/beispiel#paraphrase" . "Paraphrase")
+       ))
+
+   Customizing the face of annotated text ranges depending on markup
+type makes a usable a tagger:
+
+ -- User Option: standoff-markup-overlays
+ -- User Option: standoff-markup-overlays-front
+ -- User Option: standoff-markup-overlays-after
+     Use these user options to set font faces and text properties.
+     Example:
+
+     (setq standoff-markup-overlays '(
+       ("http://arb.fernuni-hagen.de/owl/beispiel#Beispiel" ('face 'standoff-arb-beispiel))
+           standoff-markup-overlays-front '(
+       ("http://arb.fernuni-hagen.de/owl/beispiel#Beispiel" ('face 'standoff-arb-beispiel))
+           standoff-markup-overlays-after '(
+       ("http://arb.fernuni-hagen.de/owl/beispiel#Beispiel" ('face 'standoff-arb-beispiel))
+       ))
+
+   Note that the face names must be defined to:
+
+         (defface standoff-arb-beispiel
+           '((((type x))
+     	 (:family
+     	  "misc-fixed"
+     	  :foreground
+     	  "dark red"
+     	  :weight
+     	  normal
+     	  :slant
+     	  normal))
+     	(t
+     	 (:foreground
+     	  "dark red"
+     	  :weight
+     	  normal
+     	  :slant
+     	  normal)))
+           "Face used \"beispiel\" markup type."
+           :group 'standoff-faces)
+
+
+File: standoff-en.info,  Node: Generating an annotation schema from OWL,  Prev: Defining a schema using Emacs lisp,  Up: Annotation schema
+
+7.3.3 Generating an annotation schema from OWL
+----------------------------------------------
+
+You can use the expressiveness of the web ontology language (OWL) to
+define your annotation schema.  standoff mode comes with some XSL style
+sheets for transforming OWL/XML into a schema definition in Emacs lisp
+which can be loaded by standoff mode.
+
+   The main idea is, to use
+
+‘owl:Class’
+     to define the types of markup elements
+‘owl:ObjectProperty’
+     to define the predicates for relations
+‘owl:DatatypeProperty’
+     to define the attributes for markup elements
+‘rdfs:label’
+     to define labels on all such definitions.  These labels are
+     displayed in the UI of standoff mode instead of the IRIs.  You can
+     also internationalize your OWL labels using the ‘xml:lang’
+     attribute.  The transformation will pick the label in the right
+     language, when you pass a parameter to the style sheet processor.
+
+   There are three style sheets and a file with a few OWL definitions:
+
+‘mistake-owl4config.xsl’
+     As expressed in the name, this style sheet mistakes the semantics
+     of the OWL, namely in the context of relations.  It uses
+     ‘rdfs:domain’ and ‘rdfs:range’ to restrict a predicate to a
+     combination of ‘rdfs:domain’ as markup type of the object and
+     ‘rdfs:range’ as the markup type of the subject.  Strictly speaking,
+     this does not make sense, but is rather redundant: These constructs
+     are for reasoning, not for restriction.  But it might serve you
+     well.
+
+‘owl4config.xsl’
+     This style sheet introduces annotation properties to restrict
+     predicates of relations to certain combinations of markup types of
+     subject and object while following the rules of OWL. These
+     annotations are defined in ‘standoff.owl’.
+
+‘standoff.owl’
+     ‘http://github.com/lueck/standoff-mode/owl#allowedSubject’ can be
+     used to define allowed subject type for a relation predicate.
+     ‘http://github.com/lueck/standoff-mode/owl#allowedObject’ can be
+     used to define allowed object type for a relation predicate.
+     ‘http://github.com/lueck/standoff-mode/owl#face’ is also defined,
+     and lets you define a highlighting face for a markup type.
+
+‘owl2manual.xsl’
+     This generates a TeX file from OWL which can be used to generate a
+     PDF of your annotation schema.  The OWL annotation properties
+     defined in ‘standoff.owl’ are evaluated, so that the restrictions
+     expressed with them go into the document.
+
+   See the <http://github.com/lueck/standoff-mode/arb/> for an example
+schema definition using OWL and ‘standoff.owl’: ‘arb.owl’ defines an
+schema for annotating examples in scholar texts about aesthetics in the
+18th century Germany.  Generate a Emacs lisp schema with german labels
+e.g.  by running this command in a terminal:
+
+     xsltproc --output standoff-arb-schema.el \
+     --param config-file \"standoff-arb-schema.el\" \
+     --param lang \"de\" \
+     --param provide \"true\" \
+     owl2config.xsl \
+     arb.owl
+
+   Put the following line into your Emacs init file, in order to load
+the schema in generated ‘standoff-arb-schema.el’:
+
+     ;; set how restrictive markup types and predicates and attribute
+     ;; keys are handled depending on presence of annotation schema
+     (if (featurep 'standoff-arb-schema)
+      (setq standoff-markup-type-require-match t
+            standoff-predicate-require-match t
+            standoff-literal-key-require-match t)
+      (setq standoff-markup-type-require-match 'confirm
+            standoff-predicate-require-match 'confirm
+            standoff-literal-key-require-match 'confirm))
+
+
+File: standoff-en.info,  Node: GNU Free Documentation License,  Prev: Configuration,  Up: Top
+
+Appendix A GNU Free Documentation License
+*****************************************
+
+                      Version 1.2, November 2002
+
+     Copyright © 2000,2001,2002 Free Software Foundation, Inc.
+     51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA
+
+     Everyone is permitted to copy and distribute verbatim copies
+     of this license document, but changing it is not allowed.
+
+  0. PREAMBLE
+
+     The purpose of this License is to make a manual, textbook, or other
+     functional and useful document “free” in the sense of freedom: to
+     assure everyone the effective freedom to copy and redistribute it,
+     with or without modifying it, either commercially or
+     noncommercially.  Secondarily, this License preserves for the
+     author and publisher a way to get credit for their work, while not
+     being considered responsible for modifications made by others.
+
+     This License is a kind of “copyleft”, which means that derivative
+     works of the document must themselves be free in the same sense.
+     It complements the GNU General Public License, which is a copyleft
+     license designed for free software.
+
+     We have designed this License in order to use it for manuals for
+     free software, because free software needs free documentation: a
+     free program should come with manuals providing the same freedoms
+     that the software does.  But this License is not limited to
+     software manuals; it can be used for any textual work, regardless
+     of subject matter or whether it is published as a printed book.  We
+     recommend this License principally for works whose purpose is
+     instruction or reference.
+
+  1. APPLICABILITY AND DEFINITIONS
+
+     This License applies to any manual or other work, in any medium,
+     that contains a notice placed by the copyright holder saying it can
+     be distributed under the terms of this License.  Such a notice
+     grants a world-wide, royalty-free license, unlimited in duration,
+     to use that work under the conditions stated herein.  The
+     “Document”, below, refers to any such manual or work.  Any member
+     of the public is a licensee, and is addressed as “you”.  You accept
+     the license if you copy, modify or distribute the work in a way
+     requiring permission under copyright law.
+
+     A “Modified Version” of the Document means any work containing the
+     Document or a portion of it, either copied verbatim, or with
+     modifications and/or translated into another language.
+
+     A “Secondary Section” is a named appendix or a front-matter section
+     of the Document that deals exclusively with the relationship of the
+     publishers or authors of the Document to the Document’s overall
+     subject (or to related matters) and contains nothing that could
+     fall directly within that overall subject.  (Thus, if the Document
+     is in part a textbook of mathematics, a Secondary Section may not
+     explain any mathematics.)  The relationship could be a matter of
+     historical connection with the subject or with related matters, or
+     of legal, commercial, philosophical, ethical or political position
+     regarding them.
+
+     The “Invariant Sections” are certain Secondary Sections whose
+     titles are designated, as being those of Invariant Sections, in the
+     notice that says that the Document is released under this License.
+     If a section does not fit the above definition of Secondary then it
+     is not allowed to be designated as Invariant.  The Document may
+     contain zero Invariant Sections.  If the Document does not identify
+     any Invariant Sections then there are none.
+
+     The “Cover Texts” are certain short passages of text that are
+     listed, as Front-Cover Texts or Back-Cover Texts, in the notice
+     that says that the Document is released under this License.  A
+     Front-Cover Text may be at most 5 words, and a Back-Cover Text may
+     be at most 25 words.
+
+     A “Transparent” copy of the Document means a machine-readable copy,
+     represented in a format whose specification is available to the
+     general public, that is suitable for revising the document
+     straightforwardly with generic text editors or (for images composed
+     of pixels) generic paint programs or (for drawings) some widely
+     available drawing editor, and that is suitable for input to text
+     formatters or for automatic translation to a variety of formats
+     suitable for input to text formatters.  A copy made in an otherwise
+     Transparent file format whose markup, or absence of markup, has
+     been arranged to thwart or discourage subsequent modification by
+     readers is not Transparent.  An image format is not Transparent if
+     used for any substantial amount of text.  A copy that is not
+     “Transparent” is called “Opaque”.
+
+     Examples of suitable formats for Transparent copies include plain
+     ASCII without markup, Texinfo input format, LaTeX input format,
+     SGML or XML using a publicly available DTD, and standard-conforming
+     simple HTML, PostScript or PDF designed for human modification.
+     Examples of transparent image formats include PNG, XCF and JPG.
+     Opaque formats include proprietary formats that can be read and
+     edited only by proprietary word processors, SGML or XML for which
+     the DTD and/or processing tools are not generally available, and
+     the machine-generated HTML, PostScript or PDF produced by some word
+     processors for output purposes only.
+
+     The “Title Page” means, for a printed book, the title page itself,
+     plus such following pages as are needed to hold, legibly, the
+     material this License requires to appear in the title page.  For
+     works in formats which do not have any title page as such, “Title
+     Page” means the text near the most prominent appearance of the
+     work’s title, preceding the beginning of the body of the text.
+
+     A section “Entitled XYZ” means a named subunit of the Document
+     whose title either is precisely XYZ or contains XYZ in parentheses
+     following text that translates XYZ in another language.  (Here XYZ
+     stands for a specific section name mentioned below, such as
+     “Acknowledgements”, “Dedications”, “Endorsements”, or “History”.)
+     To “Preserve the Title” of such a section when you modify the
+     Document means that it remains a section “Entitled XYZ” according
+     to this definition.
+
+     The Document may include Warranty Disclaimers next to the notice
+     which states that this License applies to the Document.  These
+     Warranty Disclaimers are considered to be included by reference in
+     this License, but only as regards disclaiming warranties: any other
+     implication that these Warranty Disclaimers may have is void and
+     has no effect on the meaning of this License.
+
+  2. VERBATIM COPYING
+
+     You may copy and distribute the Document in any medium, either
+     commercially or noncommercially, provided that this License, the
+     copyright notices, and the license notice saying this License
+     applies to the Document are reproduced in all copies, and that you
+     add no other conditions whatsoever to those of this License.  You
+     may not use technical measures to obstruct or control the reading
+     or further copying of the copies you make or distribute.  However,
+     you may accept compensation in exchange for copies.  If you
+     distribute a large enough number of copies you must also follow the
+     conditions in section 3.
+
+     You may also lend copies, under the same conditions stated above,
+     and you may publicly display copies.
+
+  3. COPYING IN QUANTITY
+
+     If you publish printed copies (or copies in media that commonly
+     have printed covers) of the Document, numbering more than 100, and
+     the Document’s license notice requires Cover Texts, you must
+     enclose the copies in covers that carry, clearly and legibly, all
+     these Cover Texts: Front-Cover Texts on the front cover, and
+     Back-Cover Texts on the back cover.  Both covers must also clearly
+     and legibly identify you as the publisher of these copies.  The
+     front cover must present the full title with all words of the title
+     equally prominent and visible.  You may add other material on the
+     covers in addition.  Copying with changes limited to the covers, as
+     long as they preserve the title of the Document and satisfy these
+     conditions, can be treated as verbatim copying in other respects.
+
+     If the required texts for either cover are too voluminous to fit
+     legibly, you should put the first ones listed (as many as fit
+     reasonably) on the actual cover, and continue the rest onto
+     adjacent pages.
+
+     If you publish or distribute Opaque copies of the Document
+     numbering more than 100, you must either include a machine-readable
+     Transparent copy along with each Opaque copy, or state in or with
+     each Opaque copy a computer-network location from which the general
+     network-using public has access to download using public-standard
+     network protocols a complete Transparent copy of the Document, free
+     of added material.  If you use the latter option, you must take
+     reasonably prudent steps, when you begin distribution of Opaque
+     copies in quantity, to ensure that this Transparent copy will
+     remain thus accessible at the stated location until at least one
+     year after the last time you distribute an Opaque copy (directly or
+     through your agents or retailers) of that edition to the public.
+
+     It is requested, but not required, that you contact the authors of
+     the Document well before redistributing any large number of copies,
+     to give them a chance to provide you with an updated version of the
+     Document.
+
+  4. MODIFICATIONS
+
+     You may copy and distribute a Modified Version of the Document
+     under the conditions of sections 2 and 3 above, provided that you
+     release the Modified Version under precisely this License, with the
+     Modified Version filling the role of the Document, thus licensing
+     distribution and modification of the Modified Version to whoever
+     possesses a copy of it.  In addition, you must do these things in
+     the Modified Version:
+
+       A. Use in the Title Page (and on the covers, if any) a title
+          distinct from that of the Document, and from those of previous
+          versions (which should, if there were any, be listed in the
+          History section of the Document).  You may use the same title
+          as a previous version if the original publisher of that
+          version gives permission.
+
+       B. List on the Title Page, as authors, one or more persons or
+          entities responsible for authorship of the modifications in
+          the Modified Version, together with at least five of the
+          principal authors of the Document (all of its principal
+          authors, if it has fewer than five), unless they release you
+          from this requirement.
+
+       C. State on the Title page the name of the publisher of the
+          Modified Version, as the publisher.
+
+       D. Preserve all the copyright notices of the Document.
+
+       E. Add an appropriate copyright notice for your modifications
+          adjacent to the other copyright notices.
+
+       F. Include, immediately after the copyright notices, a license
+          notice giving the public permission to use the Modified
+          Version under the terms of this License, in the form shown in
+          the Addendum below.
+
+       G. Preserve in that license notice the full lists of Invariant
+          Sections and required Cover Texts given in the Document’s
+          license notice.
+
+       H. Include an unaltered copy of this License.
+
+       I. Preserve the section Entitled “History”, Preserve its Title,
+          and add to it an item stating at least the title, year, new
+          authors, and publisher of the Modified Version as given on the
+          Title Page.  If there is no section Entitled “History” in the
+          Document, create one stating the title, year, authors, and
+          publisher of the Document as given on its Title Page, then add
+          an item describing the Modified Version as stated in the
+          previous sentence.
+
+       J. Preserve the network location, if any, given in the Document
+          for public access to a Transparent copy of the Document, and
+          likewise the network locations given in the Document for
+          previous versions it was based on.  These may be placed in the
+          “History” section.  You may omit a network location for a work
+          that was published at least four years before the Document
+          itself, or if the original publisher of the version it refers
+          to gives permission.
+
+       K. For any section Entitled “Acknowledgements” or “Dedications”,
+          Preserve the Title of the section, and preserve in the section
+          all the substance and tone of each of the contributor
+          acknowledgements and/or dedications given therein.
+
+       L. Preserve all the Invariant Sections of the Document, unaltered
+          in their text and in their titles.  Section numbers or the
+          equivalent are not considered part of the section titles.
+
+       M. Delete any section Entitled “Endorsements”.  Such a section
+          may not be included in the Modified Version.
+
+       N. Do not retitle any existing section to be Entitled
+          “Endorsements” or to conflict in title with any Invariant
+          Section.
+
+       O. Preserve any Warranty Disclaimers.
+
+     If the Modified Version includes new front-matter sections or
+     appendices that qualify as Secondary Sections and contain no
+     material copied from the Document, you may at your option designate
+     some or all of these sections as invariant.  To do this, add their
+     titles to the list of Invariant Sections in the Modified Version’s
+     license notice.  These titles must be distinct from any other
+     section titles.
+
+     You may add a section Entitled “Endorsements”, provided it contains
+     nothing but endorsements of your Modified Version by various
+     parties—for example, statements of peer review or that the text has
+     been approved by an organization as the authoritative definition of
+     a standard.
+
+     You may add a passage of up to five words as a Front-Cover Text,
+     and a passage of up to 25 words as a Back-Cover Text, to the end of
+     the list of Cover Texts in the Modified Version.  Only one passage
+     of Front-Cover Text and one of Back-Cover Text may be added by (or
+     through arrangements made by) any one entity.  If the Document
+     already includes a cover text for the same cover, previously added
+     by you or by arrangement made by the same entity you are acting on
+     behalf of, you may not add another; but you may replace the old
+     one, on explicit permission from the previous publisher that added
+     the old one.
+
+     The author(s) and publisher(s) of the Document do not by this
+     License give permission to use their names for publicity for or to
+     assert or imply endorsement of any Modified Version.
+
+  5. COMBINING DOCUMENTS
+
+     You may combine the Document with other documents released under
+     this License, under the terms defined in section 4 above for
+     modified versions, provided that you include in the combination all
+     of the Invariant Sections of all of the original documents,
+     unmodified, and list them all as Invariant Sections of your
+     combined work in its license notice, and that you preserve all
+     their Warranty Disclaimers.
+
+     The combined work need only contain one copy of this License, and
+     multiple identical Invariant Sections may be replaced with a single
+     copy.  If there are multiple Invariant Sections with the same name
+     but different contents, make the title of each such section unique
+     by adding at the end of it, in parentheses, the name of the
+     original author or publisher of that section if known, or else a
+     unique number.  Make the same adjustment to the section titles in
+     the list of Invariant Sections in the license notice of the
+     combined work.
+
+     In the combination, you must combine any sections Entitled
+     “History” in the various original documents, forming one section
+     Entitled “History”; likewise combine any sections Entitled
+     “Acknowledgements”, and any sections Entitled “Dedications”.  You
+     must delete all sections Entitled “Endorsements.”
+
+  6. COLLECTIONS OF DOCUMENTS
+
+     You may make a collection consisting of the Document and other
+     documents released under this License, and replace the individual
+     copies of this License in the various documents with a single copy
+     that is included in the collection, provided that you follow the
+     rules of this License for verbatim copying of each of the documents
+     in all other respects.
+
+     You may extract a single document from such a collection, and
+     distribute it individually under this License, provided you insert
+     a copy of this License into the extracted document, and follow this
+     License in all other respects regarding verbatim copying of that
+     document.
+
+  7. AGGREGATION WITH INDEPENDENT WORKS
+
+     A compilation of the Document or its derivatives with other
+     separate and independent documents or works, in or on a volume of a
+     storage or distribution medium, is called an “aggregate” if the
+     copyright resulting from the compilation is not used to limit the
+     legal rights of the compilation’s users beyond what the individual
+     works permit.  When the Document is included in an aggregate, this
+     License does not apply to the other works in the aggregate which
+     are not themselves derivative works of the Document.
+
+     If the Cover Text requirement of section 3 is applicable to these
+     copies of the Document, then if the Document is less than one half
+     of the entire aggregate, the Document’s Cover Texts may be placed
+     on covers that bracket the Document within the aggregate, or the
+     electronic equivalent of covers if the Document is in electronic
+     form.  Otherwise they must appear on printed covers that bracket
+     the whole aggregate.
+
+  8. TRANSLATION
+
+     Translation is considered a kind of modification, so you may
+     distribute translations of the Document under the terms of section
+     4.  Replacing Invariant Sections with translations requires special
+     permission from their copyright holders, but you may include
+     translations of some or all Invariant Sections in addition to the
+     original versions of these Invariant Sections.  You may include a
+     translation of this License, and all the license notices in the
+     Document, and any Warranty Disclaimers, provided that you also
+     include the original English version of this License and the
+     original versions of those notices and disclaimers.  In case of a
+     disagreement between the translation and the original version of
+     this License or a notice or disclaimer, the original version will
+     prevail.
+
+     If a section in the Document is Entitled “Acknowledgements”,
+     “Dedications”, or “History”, the requirement (section 4) to
+     Preserve its Title (section 1) will typically require changing the
+     actual title.
+
+  9. TERMINATION
+
+     You may not copy, modify, sublicense, or distribute the Document
+     except as expressly provided for under this License.  Any other
+     attempt to copy, modify, sublicense or distribute the Document is
+     void, and will automatically terminate your rights under this
+     License.  However, parties who have received copies, or rights,
+     from you under this License will not have their licenses terminated
+     so long as such parties remain in full compliance.
+
+  10. FUTURE REVISIONS OF THIS LICENSE
+
+     The Free Software Foundation may publish new, revised versions of
+     the GNU Free Documentation License from time to time.  Such new
+     versions will be similar in spirit to the present version, but may
+     differ in detail to address new problems or concerns.  See
+     <http://www.gnu.org/copyleft/>.
+
+     Each version of the License is given a distinguishing version
+     number.  If the Document specifies that a particular numbered
+     version of this License “or any later version” applies to it, you
+     have the option of following the terms and conditions either of
+     that specified version or of any later version that has been
+     published (not as a draft) by the Free Software Foundation.  If the
+     Document does not specify a version number of this License, you may
+     choose any version ever published (not as a draft) by the Free
+     Software Foundation.
+
+ADDENDUM: How to use this License for your documents
+====================================================
+
+To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and license
+notices just after the title page:
+
+       Copyright (C)  YEAR  YOUR NAME.
+       Permission is granted to copy, distribute and/or modify this document
+       under the terms of the GNU Free Documentation License, Version 1.2
+       or any later version published by the Free Software Foundation;
+       with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+       Texts.  A copy of the license is included in the section entitled ``GNU
+       Free Documentation License''.
+
+   If you have Invariant Sections, Front-Cover Texts and Back-Cover
+Texts, replace the “with...Texts.” line with this:
+
+         with the Invariant Sections being LIST THEIR TITLES, with
+         the Front-Cover Texts being LIST, and with the Back-Cover Texts
+         being LIST.
+
+   If you have Invariant Sections without Cover Texts, or some other
+combination of the three, merge those two alternatives to suit the
+situation.
+
+   If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of free
+software license, such as the GNU General Public License, to permit
+their use in free software.
+
+
+
+Tag Table:
+Node: Top660
+Node: Introduction2237
+Node: Summary2476
+Node: Installation3220
+Node: Common terms4927
+Node: Character offsets10320
+Node: Conventions12815
+Node: Starting and quitting stand-off mode14586
+Node: Activating stand-off mode14934
+Node: Readability of XML source documents16346
+Node: Performance17745
+Node: Saving annotations19239
+Node: Loading annotations21121
+Node: Markup elements22350
+Node: Relations22510
+Node: Attributes22632
+Node: Comments22749
+Node: Configuration22866
+Node: Stand-Off mode for files of a specific type23107
+Node: Back-Ends23622
+Node: JSON file back-end25360
+Node: JSON object keys26461
+Node: JSON keys for markup ranges27216
+Node: JSON keys for relations28585
+Node: JSON keys for attributes29349
+Node: JSON keys for meta data29978
+Node: Dummy back-end30429
+Node: Annotation schema32099
+Node: Strict or loose handling of an annotation schema32633
+Node: Defining a schema using Emacs lisp34524
+Node: Generating an annotation schema from OWL38119
+Node: GNU Free Documentation License41968
+
+End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:
