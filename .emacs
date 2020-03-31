@@ -62,3 +62,9 @@
 ;; Auto complete
 (require 'auto-complete-config)
 (ac-config-default)
+
+;; stan-mode
+(require 'stan-mode)
+;; Add a hook to setup `stan-mode' upon `stan-mode' entry
+(add-hook 'stan-mode-hook 'stan-mode-setup)
+(setq stan-indentation-offset 2)
