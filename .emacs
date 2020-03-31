@@ -2,9 +2,10 @@
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+
 ; list the packages
 (setq package-list
-    '(ess ess-smart-underscore org-ref auto-complete))
+    '(ess ess-smart-underscore org-ref auto-complete polymode))
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -32,7 +33,8 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (org standoff-mode flycheck-stan eldoc-stan company-stan stan-snippets stan-mode r-autoyas ess-smart-equals babel-repl babel ess-view ess-R-data-view auto-complete org-ref ess-smart-underscore ess)))
+    (markdown-preview-mode markdown-mode+ poly-R poly-markdown polymode w3m org standoff-mode flycheck-stan eldoc-stan company-stan stan-snippets stan-mode r-autoyas ess-smart-equals babel-repl babel ess-view ess-R-data-view auto-complete org-ref ess-smart-underscore ess)))
+ '(send-mail-function (quote mailclient-send-it))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
 (custom-set-faces
@@ -53,6 +55,8 @@
 
 (require 'ess-site)
 (require 'ess-smart-underscore)
+(require 'poly-R)
+(require 'poly-markdown)
 
 ;; Active the R language in Babel
 (org-babel-do-load-languages
@@ -63,8 +67,7 @@
 (require 'auto-complete-config)
 (ac-config-default)
 
-;; stan-mode
-(require 'stan-mode)
-;; Add a hook to setup `stan-mode' upon `stan-mode' entry
-(add-hook 'stan-mode-hook 'stan-mode-setup)
-(setq stan-indentation-offset 2)
+;; polymode
+(unless (package-installed-p 'polymode)
+  (package-install 'poly-markdown))
+(add-to-list 'auto-mode-alist '("\\.rmd" . poly-markdown+r-mode))
