@@ -102,8 +102,8 @@
 (setq auto-save-default nil)
 
 ;; removes *messages* from the buffer
-(setq-default message-log-max nil)
-(kill-buffer "*Messages*")
+;(setq-default message-log-max nil)
+;(kill-buffer "*Messages*")
 
 ;; Removes *Completions* from buffer
 (add-hook 'minibuffer-exit-hook
@@ -111,3 +111,18 @@
 	     (let ((buffer "*Completions*"))
 	       (and (get-buffer buffer)
 		    (kill-buffer buffer)))))
+
+(define-key global-map [f1] 'next-buffer)
+(define-key global-map [f2] 'previous-buffer)
+(define-key global-map [f3] 'other-window)
+(define-key global-map [f4] 'ess-load-file)
+
+
+
+
+
+
+
+
+
+
