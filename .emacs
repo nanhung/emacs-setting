@@ -26,6 +26,7 @@
  '(cua-mode t nil (cua-base))
  '(custom-enabled-themes (quote (tango-dark)))
  '(desktop-save-mode t)
+ '(electric-pair-mode t)
  '(global-auto-complete-mode t)
  '(global-linum-mode t)
  '(hs-hide-comments-when-hiding-all nil)
@@ -33,7 +34,7 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (hc-zenburn-theme markdown-preview-mode markdown-mode+ poly-R poly-markdown polymode w3m org standoff-mode flycheck-stan eldoc-stan company-stan stan-snippets stan-mode r-autoyas ess-smart-equals babel-repl babel ess-view ess-R-data-view auto-complete org-ref ess-smart-underscore ess)))
+    (magit ## markdown-preview-mode markdown-mode+ poly-R poly-markdown polymode org standoff-mode flycheck-stan eldoc-stan company-stan stan-snippets stan-mode r-autoyas ess-smart-equals babel-repl babel ess-view ess-R-data-view auto-complete org-ref ess-smart-underscore ess)))
  '(send-mail-function (quote mailclient-send-it))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
