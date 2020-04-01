@@ -118,3 +118,5 @@
 (define-key global-map [f2] 'previous-buffer)
 (define-key global-map [f3] 'other-window)
 (define-key global-map [f4] 'ess-load-file)
+
+(define-key global-map [f12] 'ess-eval-region-or-line-and-step)
