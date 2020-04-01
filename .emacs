@@ -1,3 +1,5 @@
+;; Location of .emacs in my Windows (c:/Users/nan_1/AppData/Roaming/.emacs)
+
 (require 'package)
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -116,13 +118,3 @@
 (define-key global-map [f2] 'previous-buffer)
 (define-key global-map [f3] 'other-window)
 (define-key global-map [f4] 'ess-load-file)
-
-
-
-
-
-
-
-
-
-
