@@ -29,6 +29,7 @@
  '(custom-enabled-themes (quote (tango-dark)))
  '(desktop-save-mode t)
  '(electric-pair-mode t)
+ '(ess-eval-visibly (quote nowait))
  '(global-auto-complete-mode t)
  '(global-linum-mode t)
  '(hs-hide-comments-when-hiding-all nil)
@@ -117,6 +118,9 @@
 (define-key global-map [f1] 'next-buffer)
 (define-key global-map [f2] 'previous-buffer)
 (define-key global-map [f3] 'other-window)
+(define-key global-map [f5] 'list-buffers)
+
 (define-key global-map [f4] 'ess-load-file)
 
 (define-key global-map [f12] 'ess-eval-region-or-line-and-step)
+
