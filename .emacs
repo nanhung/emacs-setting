@@ -60,7 +60,7 @@
 (require 'stan-mode)
 (require 'ess-site)
 (require 'ess-smart-underscore)
-(require 'ess-rutils)
+;(require 'ess-rutils)
 (require 'poly-R)
 (require 'poly-markdown)
 
@@ -104,6 +104,9 @@
 ;; no #autosave# files
 (setq auto-save-default nil)
 
+;; no bell
+;(setq visible-bell 1)
+
 ;; removes *messages* from the buffer
 ;(setq-default message-log-max nil)
 ;(kill-buffer "*Messages*")
@@ -115,12 +118,18 @@
 	       (and (get-buffer buffer)
 		    (kill-buffer buffer)))))
 
+;; auto highlight
+(add-hook 'emacs-lisp-mode-hook 'highlight-symbol-mode)
+(add-hook 'ess-mode-hook 'highlight-symbol-mode)
+(add-hook 'poly-markdown+r-mode-hook 'highlight-symbol-mode)
+
+;; hotkey
 (define-key global-map [f1] 'next-buffer)
 (define-key global-map [f2] 'previous-buffer)
 (define-key global-map [f3] 'other-window)
-(define-key global-map [f5] 'list-buffers)
+(define-key global-map [f4] 'list-buffers)
 
-(define-key global-map [f4] 'ess-load-file)
+(define-key global-map [f5] 'ess-load-file)
 
 (define-key global-map [f12] 'ess-eval-region-or-line-and-step)
 
