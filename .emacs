@@ -37,7 +37,7 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (magit ## markdown-preview-mode markdown-mode+ poly-R poly-markdown polymode org standoff-mode flycheck-stan eldoc-stan company-stan stan-snippets stan-mode r-autoyas ess-smart-equals babel-repl babel ess-view ess-R-data-view auto-complete org-ref ess-smart-underscore ess)))
+    (highlight-symbol magit ## markdown-preview-mode markdown-mode+ poly-R poly-markdown polymode org standoff-mode flycheck-stan eldoc-stan company-stan stan-snippets stan-mode r-autoyas ess-smart-equals babel-repl babel ess-view ess-R-data-view auto-complete org-ref ess-smart-underscore ess)))
  '(send-mail-function (quote mailclient-send-it))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
