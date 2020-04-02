@@ -124,12 +124,14 @@
 (add-hook 'poly-markdown+r-mode-hook 'highlight-symbol-mode)
 
 ;; hotkey
+(require 'highlight-symbol)
+(global-set-key [f3] 'highlight-symbol-prev)
+(global-set-key [f4] 'highlight-symbol-next)
+(global-set-key [(meta f3)] 'highlight-symbol-query-replace)
+
 (define-key global-map [f1] 'next-buffer)
 (define-key global-map [f2] 'previous-buffer)
-(define-key global-map [f3] 'other-window)
-(define-key global-map [f4] 'list-buffers)
 
-(define-key global-map [f5] 'ess-load-file)
-
+(define-key global-map [f9] 'other-window)
+(define-key global-map [f10] 'delete-window)
 (define-key global-map [f12] 'ess-eval-region-or-line-and-step)
-
