@@ -4,6 +4,7 @@
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
+(add-to-list 'default-frame-alist '(font . "Ubuntu Mono-12"))
 
 ;; list the packages
 (setq package-list
@@ -26,7 +27,7 @@
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(column-number-mode t)
  '(cua-mode t nil (cua-base))
- '(custom-enabled-themes (quote (tango-dark)))
+ '(custom-enabled-themes (quote (deeper-blue)))
  '(desktop-save-mode t)
  '(electric-pair-mode t)
  '(ess-eval-visibly (quote nowait))
@@ -123,6 +124,17 @@
 (add-hook 'ess-mode-hook 'highlight-symbol-mode)
 (add-hook 'poly-markdown+r-mode-hook 'highlight-symbol-mode)
 
+;; Use "Shift+Enter" to send the current line to *R*
+(defun my-ess-eval ()
+  (interactive)
+  (if (and transient-mark-mode mark-active)
+      (call-interactively 'ess-eval-region)
+    (call-interactively 'ess-eval-line-and-step)))
+
+(add-hook 'ess-mode-hook
+          '(lambda()
+             (local-set-key [(shift return)] 'my-ess-eval)))
+
 ;; hotkey
 (require 'highlight-symbol)
 (global-set-key [f3] 'highlight-symbol-prev)
@@ -135,3 +147,8 @@
 (define-key global-map [f9] 'other-window)
 (define-key global-map [f10] 'delete-window)
 (define-key global-map [f12] 'ess-eval-region-or-line-and-step)
+
+;; vertical separate only
+(setq
+   split-width-threshold 0
+   split-height-threshold nil)
