@@ -137,12 +137,12 @@
 
 ;; hotkey
 (require 'highlight-symbol)
-(global-set-key [f3] 'highlight-symbol-prev)
-(global-set-key [f4] 'highlight-symbol-next)
-(global-set-key [(meta f3)] 'highlight-symbol-query-replace)
+(define-key global-map [M-up] 'previous-buffer)
+(define-key global-map [M-down] 'next-buffer)
 
-(define-key global-map [f1] 'next-buffer)
-(define-key global-map [f2] 'previous-buffer)
+(global-set-key [f1] 'highlight-symbol-prev)
+(global-set-key [f2] 'highlight-symbol-next)
+(global-set-key [(meta f1)] 'highlight-symbol-query-replace)
 
 (define-key global-map [f9] 'other-window)
 (define-key global-map [f10] 'delete-window)
