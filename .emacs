@@ -137,16 +137,18 @@
 
 ;; hotkey
 (require 'highlight-symbol)
-(define-key global-map [M-up] 'previous-buffer)
-(define-key global-map [M-down] 'next-buffer)
+(define-key global-map [f1] 'previous-buffer)
+(define-key global-map [f2] 'next-buffer)
 
-(global-set-key [f1] 'highlight-symbol-prev)
-(global-set-key [f2] 'highlight-symbol-next)
-(global-set-key [(meta f1)] 'highlight-symbol-query-replace)
+(global-set-key [f3] 'highlight-symbol-prev)
+(global-set-key [f4] 'highlight-symbol-next)
+(global-set-key [(meta f3)] 'highlight-symbol-query-replace)
 
-(define-key global-map [f9] 'other-window)
-(define-key global-map [f10] 'delete-window)
+(define-key global-map [f7] 'other-window)
+(define-key global-map [f8] 'delete-window)
+
 (define-key global-map [f12] 'ess-eval-region-or-line-and-step)
+
 
 ;; vertical separate only
 (setq
